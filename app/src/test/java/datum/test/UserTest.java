@@ -4,31 +4,24 @@
 package datum.test;
 
 import datum.utils.User;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-public class UserTest {
+public class UserTest extends BaseTest {
 
-    @BeforeClass
-    public static void setup() {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        baseURI = "https://reqres.in";
-        basePath = "/api";
-    }
+    private static final String LIST_USER = "/users";
+    private static final String CREATE_USER = "/users";
 
     @Test
     public void testGETListUsers() {
         given().
                 params("page", "2").
         when().
-                get("/users").
+                get(LIST_USER).
         then().
                 statusCode(HttpStatus.SC_OK).
                 body("page", is(2)).
@@ -37,12 +30,11 @@ public class UserTest {
 
     @Test
     public void testPOSTCreateUser() {
-        User user = new User("Rafael", "Engine Test");
+        User user = new User("Rafael", "Engine Test", "rt@gmail.com");
         given().
-                contentType(ContentType.JSON).
                 body(user).
         when().
-                post("/users").
+                post(CREATE_USER).
         then().
                 statusCode(HttpStatus.SC_CREATED).
                 body("name", is("Rafael"));
